@@ -1,0 +1,5 @@
+<Project>
+  <Target Name="KillRunningExe" BeforeTargets="BeforeBuild">
+    <Exec Command="taskkill /F /IM &quot;Warehouse Management.exe&quot; /T" ContinueOnError="true" />
+  </Target>
+</Project>
