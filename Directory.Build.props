@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <OutputPath Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">bin\Debug_Build\</OutputPath>
+    <OutputPath Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">bin\Release_Build\</OutputPath>
+  </PropertyGroup>
+</Project>
