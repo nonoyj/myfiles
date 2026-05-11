@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy 2nd Anniversary Loveyyy💚</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #1a4a2e;
+    --green-mid: #2d7a4f;
+    --green-soft: #4caf7d;
+    --green-light: #a8d5b8;
+    --green-pale: #e8f5ee;
+    --white: #ffffff;
+    --cream: #fafef9;
+    --text-dark: #0f2d1c;
+    --text-mid: #2d5a3d;
+    --shadow: rgba(26,74,46,0.18);
+
+    /* Mobile-safe spacing */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+  }
+
+  *, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    height: -webkit-fill-available;
+  }
+
+  body {
+    width: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    font-family: 'Lato', sans-serif;
+    overflow: hidden;
+    background: var(--cream);
+    color: var(--text-dark);
+    /* Prevent bounce scroll on iOS */
+    position: fixed;
+    inset: 0;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ─── PAGE SYSTEM ─── */
+  .page {
+    position: fixed;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(24px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    padding-top: var(--safe-top);
+    padding-bottom: calc(var(--safe-bottom) + 60px); /* room for dots */
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
+  }
+  .page.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+    z-index: 10;
+  }
+  .page.exit {
+    opacity: 0;
+    transform: translateY(-24px);
+    pointer-events: none;
+  }
+
+  /* ─── BACKGROUND SLIDESHOW ─── */
+  .bg-slideshow {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden;
+  }
+  .bg-slide {
+    position: absolute; inset: 0;
+    opacity: 0;
+    transition: opacity 1.8s ease;
+    background-size: cover;
+    background-position: center;
+  }
+  .bg-slide.visible { opacity: 1; }
+
+  .bg-slide:nth-child(1) { background-image: url('2.jpg'); }
+  .bg-slide:nth-child(2) { background-image: url('4.jpg'); }
+  .bg-slide:nth-child(3) { background-image: url('5.jpg'); }
+  .bg-slide:nth-child(4) { background-image: url('6.jpg'); }
+  .bg-slide:nth-child(5) { background-image: url('9.jpg'); }
+
+  .bg-overlay {
+    position: fixed; inset: 0; z-index: 1;
+    background: rgba(10, 25, 16, 0.58);
+  }
+
+  /* ─── FLOATING LEAVES ─── */
+  .leaf {
+    position: fixed; z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    animation: floatLeaf linear infinite;
+  }
+  @keyframes floatLeaf {
+    0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.4; }
+    90%  { opacity: 0.3; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ─── PAGE DOTS ─── */
+  .page-dots {
+    position: fixed;
+    bottom: calc(12px + var(--safe-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 8px;
+    z-index: 30;
+    padding: 8px 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 50px;
+    backdrop-filter: blur(8px);
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(168,213,184,0.3);
+    border: 1px solid rgba(168,213,184,0.4);
+    cursor: pointer;
+    transition: all 0.3s;
+    /* Larger touch target */
+    position: relative;
+  }
+  .dot::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+  .dot.active {
+    background: rgba(76,175,125,0.9);
+    width: 24px; border-radius: 4px;
+  }
+
+  /* ─── SHARED BUTTON STYLES ─── */
+  .nav-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(76,175,125,0.2);
+    border: 1.5px solid rgba(76,175,125,0.6);
+    color: #d0f0df;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.82rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 13px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(8px);
+    /* Better touch target */
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .nav-btn:active {
+    background: rgba(76,175,125,0.5);
+    transform: scale(0.97);
+  }
+  @media (hover: hover) {
+    .nav-btn:hover {
+      background: rgba(76,175,125,0.4);
+      border-color: rgba(76,175,125,0.9);
+      box-shadow: 0 6px 24px rgba(76,175,125,0.25);
+    }
+  }
+  .nav-btn svg { flex-shrink: 0; }
+
+  .nav-btn-back {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.7);
+  }
+  .nav-btn-back:active {
+    background: rgba(255,255,255,0.18);
+  }
+
+  .ornament {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: rgba(168,213,184,0.5);
+  }
+
+  /* ══════════════════════════
+     PAGE 1 — LANDING
+  ══════════════════════════ */
+  #page-landing {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+
+  .landing-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .landing-card {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(168,213,184,0.28);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 8px 48px rgba(26,74,46,0.35);
+  }
+
+  .anniversary-badge {
+    display: inline-block;
+    background: rgba(76,175,125,0.22);
+    border: 1px solid rgba(76,175,125,0.45);
+    color: #a8d5b8;
+    font-family: 'Lato', sans-serif;
+    font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 50px;
+    margin-bottom: 1.2rem;
+  }
+
+  .landing-card h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.7rem, 7vw, 2.8rem);
+    color: var(--white);
+    line-height: 1.25;
+    margin-bottom: 0.4rem;
+  }
+  .landing-card h1 em {
+    font-style: italic;
+    color: #a8d5b8;
+  }
+
+  .heart-divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin: 1.2rem 0;
+    color: rgba(168,213,184,0.6);
+  }
+  .heart-divider::before, .heart-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(168,213,184,0.35));
+  }
+  .heart-divider::after {
+    background: linear-gradient(to left, transparent, rgba(168,213,184,0.35));
+  }
+
+  .message-text {
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.88);
+    line-height: 1.8;
+    text-align: left;
+  }
+  .message-text p { margin-bottom: 1rem; }
+  .message-text p:last-child { margin-bottom: 0; }
+  .message-text strong {
+    color: #c6e8d4;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .landing-footer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ══════════════════════════
+     PAGE 2 — PHOTOS
+  ══════════════════════════ */
+  #page-photos {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .photos-header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+    flex-shrink: 0;
+  }
+  .photos-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 6vw, 2.4rem);
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+  .photos-header p {
+    color: rgba(168,213,184,0.8);
+    font-size: 0.8rem; letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── Scroll-strip layout for mobile ── */
+  .photos-scroll-wrap {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    padding: 1rem 1rem 1.5rem;
+    scrollbar-width: none;
+  }
+  .photos-scroll-wrap::-webkit-scrollbar { display: none; }
+
+  .photos-strip {
+    display: flex;
+    gap: 16px;
+    width: max-content;
+    align-items: center;
+    padding: 0 0.5rem;
+  }
+
+  .polaroid {
+    background: #fff;
+    padding: 10px 10px 38px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.32);
+    border-radius: 2px;
+    flex-shrink: 0;
+    transform: rotate(var(--rot));
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+    will-change: transform;
+    touch-action: manipulation;
+  }
+  .polaroid:active {
+    transform: rotate(0deg) scale(1.04);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    z-index: 20;
+  }
+  @media (hover: hover) {
+    .polaroid:hover {
+      transform: rotate(0deg) scale(1.05);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    }
+  }
+
+  .polaroid-img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    background: var(--green-pale);
+  }
+
+  /* Larger on wider screens */
+  @media (min-width: 480px) {
+    .polaroid-img { width: 190px; height: 190px; }
+  }
+
+  .polaroid-caption {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.78rem;
+    color: var(--text-dark);
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.4;
+    max-width: 160px;
+  }
+  @media (min-width: 480px) {
+    .polaroid-caption { max-width: 190px; }
+  }
+
+  /* Swipe hint */
+  .swipe-hint {
+    text-align: center;
+    color: rgba(168,213,184,0.55);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-bottom: 0.5rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .swipe-hint svg { opacity: 0.5; }
+
+  .photos-nav {
+    text-align: center;
+    padding: 0.75rem 1rem 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  /* ══════════════════════════
+     PAGE 3 — TIMER
+  ══════════════════════════ */
+  #page-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+
+  .timer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .timer-card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(168,213,184,0.22);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2rem 1.5rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 8px 48px rgba(26,74,46,0.3);
+    text-align: center;
+  }
+
+  .timer-eyebrow {
+    font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(168,213,184,0.7);
+    margin-bottom: 0.7rem;
+  }
+
+  .timer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 6vw, 2.2rem);
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+
+  .timer-subtitle {
+    font-size: 0.85rem;
+    color: rgba(168,213,184,0.7);
+    margin-bottom: 1.8rem;
+  }
+
+  .timer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Stack to 2x2 on very small screens */
+  @media (max-width: 360px) {
+    .timer-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .timer-unit {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(168,213,184,0.18);
+    border-radius: 14px;
+    padding: 1rem 0.25rem 0.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .timer-unit::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(76,175,125,0.7), transparent);
+  }
+
+  .timer-number {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 7vw, 2.8rem);
+    color: #d0f0df;
+    line-height: 1;
+    margin-bottom: 5px;
+    transition: transform 0.18s ease;
+  }
+  .timer-number.tick { transform: scale(1.1); }
+
+  .timer-label {
+    font-size: 0.6rem; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(168,213,184,0.6);
+  }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.08);
+    border-radius: 50px;
+    height: 5px;
+    margin: 1.2rem 0;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-mid), var(--green-soft));
+    border-radius: 50px;
+    transition: width 1s ease;
+  }
+
+  .timer-message {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.7;
+    margin: 1.2rem 0 0.5rem;
+  }
+
+  .stephy-me {
+    font-family: 'Brush Script MT', cursive;
+    font-size: clamp(1.8rem, 8vw, 2.8rem);
+    color: rgba(255,255,255,0.82);
+    line-height: 1.5;
+    margin: 0.5rem 0;
+  }
+
+  .start-date-info {
+    font-size: 0.75rem;
+    color: rgba(168,213,184,0.5);
+    margin-top: 0.4rem;
+    letter-spacing: 0.08em;
+  }
+
+  .timer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 1.8rem;
+    flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── BACKGROUND ─── -->
+<div class="bg-slideshow" id="bgSlideshow">
+  <div class="bg-slide visible"></div>
+  <div class="bg-slide"></div>
+  <div class="bg-slide"></div>
+  <div class="bg-slide"></div>
+  <div class="bg-slide"></div>
+</div>
+<div class="bg-overlay"></div>
+
+<!-- ─── FLOATING LEAVES ─── -->
+<div id="leaves"></div>
+
+<!-- ─── PAGE DOTS ─── -->
+<div class="page-dots">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 1 — LANDING
+════════════════════════════════════ -->
+<div class="page active" id="page-landing">
+  <div class="landing-inner">
+    <div class="landing-card">
+      <div class="anniversary-badge">✦ Two Beautiful Years ✦</div>
+
+      <h1>Happy 2nd Anniversary,<br><em>My Love</em></h1>
+
+      <div class="heart-divider">
+        <span class="ornament">♡</span>
+      </div>
+
+      <div class="message-text">
+        <p>Back when nga naga pangaluyag palang ko saimo, before pa sang nag decide ka nga sabton ko, <strong>I knew in the first place nga ang decision ko nga to enter your life is worth it.</strong> Even though may mga sacrifices kag risks gid para lang maging kita and both of us know kung ano man ina.</p>
+
+        <p>Eversince that day nga gin sabat mo ko and until now wala gid ko dyapon regrets because You have loved me in ways I didn't know I deserved. You've seen me at my lowest and stayed. You've cheered for me at my highest that I will forever cherish.</p>
+
+        <p>Every small moment — aton mga rides, the late-night video calls, the shared silences, the inside jokes only and mga moments man nga feel ko hindi ko na gid kayanon ilog sang nadula si Kaisa. You helped me cope and gave me such purpose to still happily live kag batunon ang departure ni Kaisa and <em>We</em> both understand — they've woven themselves into the most beautiful chapter of my life. I am <strong>so incredibly grateful</strong> that it's you that I have in those moments.</p>
+
+        <p>Two years might seem small to the world, pero para sa akon, these have been the two most meaningful years I've ever lived. I look at where we started and where we are now, and I fall even more in love with the <strong>journey we've built together.</strong></p>
+
+        <p>Ode to us — to every laughter yet to come, every adventure not yet taken, and every afternoon rides still ahead — with <em>you</em>, forever and always. <strong>Happy 2nd Anniversary, Loveyy!</strong></p>
+
+        <p style="text-align:right;"><strong>- J'romeeee your love</strong></p>
+      </div>
+
+      <div class="landing-footer">
+        <button class="nav-btn" onclick="goTo(1)">
+          Our Memories
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 2 — PHOTOS
+════════════════════════════════════ -->
+<div class="page" id="page-photos">
+  <div class="photos-header">
+    <h2>Our Moments Together</h2>
+    <p>✦ Two years of memories ✦</p>
+  </div>
+
+  <div class="swipe-hint">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M5 12l4-4M5 12l4 4"/></svg>
+    Swipe to browse
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M15 8l4 4-4 4"/></svg>
+  </div>
+
+  <div class="photos-scroll-wrap" id="photosScroll">
+    <div class="photos-strip" id="photosStrip">
+      <!-- Polaroids inserted by JS -->
+    </div>
+  </div>
+
+  <div class="photos-nav">
+    <button class="nav-btn nav-btn-back" onclick="goTo(0)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </button>
+    <button class="nav-btn" onclick="goTo(2)">
+      Our Time
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE 3 — TIMER
+════════════════════════════════════ -->
+<div class="page" id="page-timer">
+  <div class="timer-inner">
+    <div class="timer-card">
+      <p class="timer-eyebrow">✦ We have been together for ✦</p>
+      <h2 class="timer-title">Every Second Counts</h2>
+      <p class="timer-subtitle">Since the day our story began</p>
+
+      <div class="timer-grid">
+        <div class="timer-unit">
+          <span class="timer-number" id="t-days">000</span>
+          <span class="timer-label">Days</span>
+        </div>
+        <div class="timer-unit">
+          <span class="timer-number" id="t-hours">00</span>
+          <span class="timer-label">Hours</span>
+        </div>
+        <div class="timer-unit">
+          <span class="timer-number" id="t-minutes">00</span>
+          <span class="timer-label">Mins</span>
+        </div>
+        <div class="timer-unit">
+          <span class="timer-number" id="t-seconds">00</span>
+          <span class="timer-label">Secs</span>
+        </div>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="yearProgress" style="width:0%"></div>
+      </div>
+
+      <p class="timer-message">
+        "Every moment spent with you is worth a thousand worlds."<br>
+        Thank you for choosing me, again and again.
+      </p>
+
+      <p class="stephy-me">J'rome and Stephanie</p>
+
+      <p class="start-date-info" id="startDateInfo">Together since April 21, 2024</p>
+
+      <div class="timer-nav">
+        <button class="nav-btn nav-btn-back" onclick="goTo(1)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Photos
+        </button>
+        <button class="nav-btn" onclick="goTo(0)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          Home
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ CONFIG ══ */
+const ANNIVERSARY_DATE = new Date('2024-04-21T00:00:00');
+
+/* ══ PHOTOS ══ */
+const photos = [
+  {src: 'kaisa-lulu.jpg', caption: 'That Perfect Day with Kaisa and Lulu 🌿', rot: -4},
+  {src: 'adventure.jpg',  caption: 'Our adventures 💚', rot: 3},
+  {src: 'laugh.jpg',      caption: 'A lifetime of laughter 😊', rot: -3},
+  {src: '3.jpg',          caption: 'Sang ara pa si Kaisa ✨', rot: 5},
+  {src: '1.jpg',          caption: 'Just the two of us 🌸', rot: -4},
+  {src: 'fav.jpg',        caption: 'My favorite person 💚', rot: 3},
+  {src: 'golden.jpg',     caption: 'Golden memories 🌟', rot: -5},
+  {src: '4ever.jpg',      caption: 'Forever moments 💫', rot: 4},
+];
+
+/* ══ BUILD POLAROIDS (horizontal scroll strip) ══ */
+function buildPolaroids() {
+  const strip = document.getElementById('photosStrip');
+  strip.innerHTML = '';
+  photos.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'polaroid';
+    div.style.setProperty('--rot', p.rot + 'deg');
+    div.innerHTML = `
+      <img src="${p.src}" class="polaroid-img" alt="${p.caption}" loading="lazy">
+      <div class="polaroid-caption">${p.caption}</div>
+    `;
+    strip.appendChild(div);
+  });
+}
+
+/* ══ BACKGROUND SLIDESHOW ══ */
+const slides = document.querySelectorAll('.bg-slide');
+let bgIdx = 0;
+setInterval(() => {
+  slides[bgIdx].classList.remove('visible');
+  bgIdx = (bgIdx + 1) % slides.length;
+  slides[bgIdx].classList.add('visible');
+}, 4000);
+
+/* ══ FLOATING LEAVES ══ */
+const leafSVGs = [
+  '<svg width="16" height="20" viewBox="0 0 18 22" fill="rgba(76,175,125,0.45)"><path d="M9 21 C9 21 1 14 1 7 C1 3 5 1 9 1 C13 1 17 3 17 7 C17 14 9 21 9 21Z"/></svg>',
+  '<svg width="12" height="16" viewBox="0 0 14 18" fill="rgba(168,213,184,0.35)"><ellipse cx="7" cy="9" rx="6" ry="8" transform="rotate(-20 7 9)"/></svg>',
+];
+const leavesEl = document.getElementById('leaves');
+for (let i = 0; i < 10; i++) {
+  const l = document.createElement('div');
+  l.className = 'leaf';
+  l.innerHTML = leafSVGs[i % 2];
+  const left = Math.random() * 100;
+  const dur = 9 + Math.random() * 9;
+  const delay = Math.random() * 14;
+  l.style.cssText = `left:${left}vw;animation-duration:${dur}s;animation-delay:${delay}s;`;
+  leavesEl.appendChild(l);
+}
+
+/* ══ PAGE NAVIGATION ══ */
+const pages = document.querySelectorAll('.page');
+const dots = document.querySelectorAll('.dot');
+let currentPage = 0;
+let timerStarted = false;
+
+function goTo(idx) {
+  if (idx === currentPage) return;
+  const cur = pages[currentPage];
+  cur.classList.add('exit');
+  cur.classList.remove('active');
+  dots[currentPage].classList.remove('active');
+
+  currentPage = idx;
+  dots[currentPage].classList.add('active');
+
+  setTimeout(() => {
+    cur.classList.remove('exit');
+    pages[idx].classList.add('active');
+    // Reset scroll on photos page
+    if (idx === 1) {
+      document.getElementById('photosScroll').scrollLeft = 0;
+    }
+    if (idx === 2 && !timerStarted) {
+      timerStarted = true;
+      startTimer();
+    }
+  }, 120);
+}
+
+/* ══ SWIPE TO NAVIGATE ══ */
+let touchStartX = 0;
+let touchStartY = 0;
+let isSwiping = false;
+
+document.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+  isSwiping = false;
+}, { passive: true });
+
+document.addEventListener('touchmove', e => {
+  const dx = e.touches[0].clientX - touchStartX;
+  const dy = e.touches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) + 10) isSwiping = true;
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (!isSwiping) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  // Don't swipe-navigate when on the photos horizontal scroll
+  const onPhotos = currentPage === 1;
+  if (onPhotos) return; // let the scroll strip handle horizontal swipes
+
+  if (Math.abs(dx) > 50) {
+    if (dx < 0 && currentPage < 2) goTo(currentPage + 1);
+    if (dx > 0 && currentPage > 0) goTo(currentPage - 1);
+  }
+}, { passive: true });
+
+/* ══ COUNTDOWN TIMER ══ */
+function pad(n, len = 2) { return String(Math.floor(n)).padStart(len, '0'); }
+
+function startTimer() {
+  function tick() {
+    const now = new Date();
+    const diff = now - ANNIVERSARY_DATE;
+    if (diff < 0) return;
+
+    const totalSec = Math.floor(diff / 1000);
+    const days    = Math.floor(totalSec / 86400);
+    const hours   = Math.floor((totalSec % 86400) / 3600);
+    const minutes = Math.floor((totalSec % 3600) / 60);
+    const seconds = totalSec % 60;
+
+    const set = (id, val, len) => {
+      const el = document.getElementById(id);
+      const str = pad(val, len);
+      if (el.textContent !== str) {
+        el.classList.add('tick');
+        setTimeout(() => el.classList.remove('tick'), 180);
+        el.textContent = str;
+      }
+    };
+
+    set('t-days', days, 3);
+    set('t-hours', hours, 2);
+    set('t-minutes', minutes, 2);
+    set('t-seconds', seconds, 2);
+
+    const dayOfYear = days % 365;
+    document.getElementById('yearProgress').style.width = ((dayOfYear / 365) * 100) + '%';
+    document.getElementById('startDateInfo').textContent =
+      'Together since ' + ANNIVERSARY_DATE.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+  }
+
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ══ INIT ══ */
+buildPolaroids();
+</script>
+</body>
+</html>
