@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0e" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>StageFlow — AI Setlist Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Borel&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="cordova.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="sf-header">
+    <div class="sf-brand">
+      <div class="sf-logo">StageFlow</div>
+      <div class="sf-tagline">AI-powered setlist &amp; performance manager</div>
+    </div>
+    <button class="btn-about" onclick="openModal('aboutModal')">About</button>
+  </header>
+
+  <main class="sf-main">
+
+    <div class="card" style="margin-bottom: 28px;">
+      <div class="card-head">
+        <div class="section-title">AI Setlist Analyzer</div>
+        <div class="section-sub">Find the perfect songs for your setlist</div>
+      </div>
+      <div class="card-body">
+        <div class="format-hint">
+          <strong>How to use:</strong> For better results, press <code>Song lookup</code> and search for each song to add to your setlist.
+        </div>
+        <textarea id="setlistInput" class="sf-textarea" rows="6"
+          placeholder="Tsinelas - Yano&#10;Hotel California - Eagles&#10;Truth - Bamboo&#10;A Team&#10;Man I Need - Olivia Dean"></textarea>
+        <div class="-actions">
+          <button class="btn-primary" id="analyzeBtn" onclick="handleAnalyze()">Add to Setlist</button>
+          <button class="btn-secondary" onclick="openModal('lookupModal')">Song Lookup</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultBanner" class="result-banner" style="display: none;"></div>
+
+    <div id="autocorrectSection" class="autocorrect-section" style="display: none;">
+      <div class="autocorrect-label">Autocorrections Applied</div>
+      <div id="autocorrectList" class="autocorrect-list"></div>
+    </div>
+
+    <div id="songSection" style="display: none;">
+      <div class="song-section-head">
+        <div class="section-title" style="font-size: 1.5rem;">Your Setlist</div>
+        <div class="section-sub" id="songCount"></div>
+      </div>
+      <div id="songGrid" class="song-grid"></div>
+    </div>
+
+    <div id="performanceSection" style="display: none;" class="performance-section">
+      <div class="perf-header">
+        <div class="perf-song-info">
+          <div class="perf-song-title" id="perfSongTitle"></div>
+          <div class="perf-song-meta" id="perfSongMeta"></div>
+        </div>
+      </div>
+      <div class="perf-controls">
+        <button class="perf-btn perf-prev" onclick="prevSong()">⏮</button>
+        <button class="perf-btn perf-playpause" id="perfPlayBtn" onclick="togglePerformance()">▶</button>
+        <button class="perf-btn perf-next" onclick="nextSong()">⏭</button>
+        <button class="perf-btn perf-exit" onclick="exitPerformanceMode()">✕</button>
+      </div>
+      <div class="perf-progress-container">
+        <div class="perf-progress-bar">
+          <div class="perf-progress-fill" id="perfProgress"></div>
+        </div>
+        <div class="perf-time" id="perfTime">0:00 / 0:00</div>
+      </div>
+      <div class="perf-scroll-row">
+        <span id="autoScrollPill" class="auto-scroll-pill" onclick="toggleAutoScroll()" title="Tap to toggle auto-scroll">
+        Auto-scroll ON
+        </span>
+      </div>
+      <div class="perf-lyrics-container" id="perfLyricsContainer">
+        <div class="perf-header"><h3>Lyrics</h3></div>
+        <div id="perfLyrics"></div>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('songSection').insertAdjacentHTML('beforeend', `
+        <div class="perf-start-section">
+          <button class="btn-primary perf-start-btn" onclick="startPerformanceMode()" style="width: 100%; margin-top: 24px;">
+            Start Performance Mode
+          </button>
+        </div>
+      `);
+    </script>
+
+  </main>
+
+  <div id="analyzeOverlay" style="display:none; position:fixed; inset:0; z-index:300;">
+    <div class="analyze-overlay-bg"></div>
+    <div class="analyze-overlay-content">
+      <div class="analyze-logo-text">StageFlow</div>
+      <div class="analyze-title-text">Analyzing your setlist…</div>
+      <div class="analyze-progress-wrap">
+        <div class="analyze-progress-track">
+          <div id="analyzeBar" class="analyze-progress-fill" style="width:0%;"></div>
+        </div>
+        <div id="analyzeStep" class="analyze-step-label"></div>
+      </div>
+      <div class="analyze-spinner">
+        <div class="analyze-dot"></div>
+        <div class="analyze-dot"></div>
+        <div class="analyze-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lookupModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-hd">
+        <div>
+          <div class="modal-title">Song Lookup</div>
+          <div class="modal-sub">Search by title, lyrics, or hum / sing the melody</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('lookupModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="lookup-wrap">
+          <input id="lookupInput" class="lookup-input" type="text"
+            placeholder="Type a song title, artist, or lyric snippet…"
+            onkeydown="if(event.key === 'Enter') runLookup()" />
+          <button class="lookup-search-btn" onclick="runLookup()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="hum-section">
+          <button id="humBtn" class="hum-btn">
+            Hold to Hum or Sing — release to search
+          </button>
+          <div id="humHeard" class="hum-heard" style="display: none;"></div>
+        </div>
+        <hr class="divider" />
+        <div id="lookupLoading" class="loading-row" style="display: none;">
+          <div class="ld"></div><div class="ld"></div><div class="ld"></div>
+        </div>
+        <div id="lookupResults">
+          <div class="empty-state">Search for a song above, or hold the button to hum / sing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="aboutModal" class="modal-backdrop">
+    <div class="modal modal-about">
+      <div class="modal-hd">
+        <div>
+          <div class="modal-title">About StageFlow</div>
+          <div class="modal-sub">The team behind the music</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('aboutModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="about-intro">
+          <div class="about-app-logo">StageFlow</div>
+          <p class="about-app-desc">
+            StageFlow is an AI-powered setlist and performance manager built for live musicians.
+            Analyzes song flow, and delivers real-time song lyrics and artists informations. -
+            right on stage, no more fumbling with phones or tablets!
+          </p>
+        </div>
+        <div class="about-divider-label">Meet the Developers</div>
+        <div class="dev-grid">
+          <div class="dev-card">
+            <div class="dev-avatar"><div class="dev-avatar-placeholder"><img src="obj/jrome.jpg" alt="J'rome A. De la Cruz"></div></div>
+            <div class="dev-name">J'rome A. De la Cruz</div>
+            <div class="dev-role">Lead Developer</div>
+            <div class="dev-bio">2nd Year BSIT Student in University of San Agustin.</div>
+            <div class="dev-socials"><a class="dev-social-btn" href="https://www.facebook.com/share/1EEUG5JTxg/" target="_blank">Facebook</a></div>
+          </div>
+          <div class="dev-card">
+            <div class="dev-avatar"><div class="dev-avatar-placeholder"><img src="obj/carl.jpg" alt="Carl Malan"></div></div>
+            <div class="dev-name">Carl Malan</div>
+            <div class="dev-role">UI / UX Designer</div>
+            <div class="dev-bio">2nd year BSIT student in University of San Agustin.</div>
+            <div class="dev-socials"><a class="dev-social-btn" href="https://www.facebook.com/share/1F7DxCYSXu/" target="_blank">Facebook</a></div>
+          </div>
+          <div class="dev-card">
+            <div class="dev-avatar"><div class="dev-avatar-placeholder"><img src="obj/dale.jpg" alt="Dale Misajon"></div></div>
+            <div class="dev-name">Dale Misajon</div>
+            <div class="dev-role">AI Integration</div>
+            <div class="dev-bio">2nd year BSIT student in University of San Agustin.</div>
+            <div class="dev-socials"><a class="dev-social-btn" href="https://www.facebook.com/share/1As8Chi2RL/" target="_blank">Facebook</a></div>
+          </div>
+          <div class="dev-card">
+            <div class="dev-avatar"><div class="dev-avatar-initials"><img src="obj/walter.jpg" alt="Phenaeus Walter Gavilla"></div></div>
+            <div class="dev-name">Phenaeus Walter Gavilla</div>
+            <div class="dev-role">Front-end Developer</div>
+            <div class="dev-bio">2nd year BSIT student in University of San Agustin.</div>
+            <div class="dev-socials"><a class="dev-social-btn" href="https://www.facebook.com/share/1bNLBVUCpv/" target="_blank">Facebook</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <audio id="previewAudio" preload="none"></audio>
+  <script src="js/main.js"></script>
+</body>
+</html>

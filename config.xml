@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.stageflow.myapp" version="1.0.0" 
+        xmlns="http://www.w3.org/ns/widgets" 
+        xmlns:cdv="http://cordova.apache.org/ns/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>StageFlow</name>
+    <description>AI Setlist Manager for Live Performers</description>
+    <author email="your@email.com" href="#">StageFlow Team</author>
+    <content src="index.html" />
+
+    <!-- Plugins — no version pins, let Cordova resolve latest -->
+    <plugin name="cordova-plugin-speechrecognition" />
+    <plugin name="cordova-plugin-insomnia" />
+
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-navigation href="*" />
+
+    <platform name="android">
+        <allow-intent href="market:*" />
+
+        <!-- Network -->
+        <uses-permission android:name="android.permission.INTERNET" />
+
+        <!-- Microphone for hum/sing -->
+        <uses-permission android:name="android.permission.RECORD_AUDIO" />
+        <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+        <!-- Keep screen awake in performance mode -->
+        <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+        <!-- Icon + splash (add your own files or remove these) -->
+        <!-- <icon src="res/icon.png" /> -->
+
+        <preference name="android-minSdkVersion" value="22" />
+        <preference name="android-targetSdkVersion" value="36" />
+    </platform>
+
+    <platform name="ios">
+        <allow-intent href="itms:*" />
+        <allow-intent href="itms-apps:*" />
+        <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
+            <string>StageFlow needs your microphone to identify songs by humming or singing.</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSSpeechRecognitionUsageDescription">
+            <string>StageFlow uses speech recognition to identify songs.</string>
+        </config-file>
+    </platform>
+
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="BackupWebStorage" value="none" />
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarBackgroundColor" value="#0a0a0e" />
+    <preference name="MixedContentMode" value="2" />
+    <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+
+</widget>
